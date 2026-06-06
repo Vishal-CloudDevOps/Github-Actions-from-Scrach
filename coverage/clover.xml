@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1780594136112" clover="3.2.0">
+  <project timestamp="1780594136113" name="All files">
+    <metrics statements="6" coveredstatements="6" conditionals="8" coveredconditionals="8" methods="4" coveredmethods="4" elements="18" coveredelements="18" complexity="0" loc="6" ncloc="6" packages="1" files="1" classes="1"/>
+    <file name="App.jsx" path="C:\Users\prasa\Downloads\github-actions-aws-cicd-10-projects\repo\project-04-react-s3-cloudfront\src\App.jsx">
+      <metrics statements="6" coveredstatements="6" conditionals="8" coveredconditionals="8" methods="4" coveredmethods="4"/>
+      <line num="4" count="9" type="stmt"/>
+      <line num="5" count="9" type="stmt"/>
+      <line num="7" count="9" type="stmt"/>
+      <line num="8" count="4" type="stmt"/>
+      <line num="15" count="9" type="stmt"/>
+      <line num="20" count="1" type="stmt"/>
+    </file>
+  </project>
+</coverage>

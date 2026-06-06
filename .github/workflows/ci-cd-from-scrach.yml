@@ -1,0 +1,54 @@
+name: learning CI-CD from scrach
+on:
+  # Trigger on pushes to main or develop branches
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/**'
+      - '.github/workflows/ci-cd-from-scrach.yml'
+
+  # Trigger on PRs targeting main
+  pull_request:
+    branches: [main]
+    
+
+  # Allow manual trigger from GitHub UI
+  workflow_dispatch:
+    inputs:
+      node_version:
+        description: 'Node.js version to use'
+        required: false
+        default: '20'
+        type: choice
+        options: ['18', '20', '22']
+  
+  # Restrict token permissions to minimum required (security best practice)
+permissions:
+  contents: read        # Read repo code
+  checks: write         # Write test results as checks
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs: 
+  # ──────────────────────────────────────────
+  # JOB: Secret Scanning
+  # Runs Gitleaks to detect accidentally committed secrets
+  # ──────────────────────────────────────────
+  secret-scan:
+    name: 🔐 Secret Scanning (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history so Gitleaks can scan all commits
+          fetch-depth: 0
+
+      - name: Run Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: false  # Fail pipeline if secrets are found
