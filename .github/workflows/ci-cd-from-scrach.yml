@@ -150,7 +150,7 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment:
-      name: production
+      name: test
       #url: https://your-cloudfront-domain.cloudfront.net
       url: http://s3-static-website-project-4.s3-website-us-east-1.amazonaws.com
 
@@ -168,7 +168,7 @@ jobs:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/OIDC_Role_GitHubActions
           aws-region: ${{ env.AWS_REGION }}
 
-      # Sync the build directory to S3
+      # Sync the build directory to S3.
       # --delete: removes files in S3 that no longer exist locally
       # --cache-control: tells browsers and CloudFront how long to cache files
       - name: Deploy to S3
