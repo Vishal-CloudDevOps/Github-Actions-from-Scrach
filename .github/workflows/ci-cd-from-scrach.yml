@@ -140,3 +140,51 @@ jobs:
           path: build/
           retention-days: 14
 
+  # ──────────────────────────────────────────
+  # JOB: Deploy to S3
+  # Only runs on push to main (not PRs)
+  # ──────────────────────────────────────────
+  deploy:
+    name: 🚀 Deploy to S3 
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      #url: https://your-cloudfront-domain.cloudfront.net
+      url: http://s3-static-website-project-4.s3-website-us-east-1.amazonaws.com
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: react-build-${{ github.sha }}
+          path: build/
+
+      # OIDC Authentication — no keys stored in GitHub
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/OIDC_Role_GitHubActions
+          aws-region: ${{ env.AWS_REGION }}
+
+      # Sync the build directory to S3
+      # --delete: removes files in S3 that no longer exist locally
+      # --cache-control: tells browsers and CloudFront how long to cache files
+      - name: Deploy to S3
+        run: |
+          # Deploy HTML files with no-cache (always fetch latest)
+          aws s3 sync build/ s3://${{ env.S3_BUCKET }}/ \
+            --delete \
+            --exclude "*.js" \
+            --exclude "*.css" \
+            --cache-control "no-cache, no-store, must-revalidate"
+
+          # Deploy hashed JS/CSS files with long cache (1 year)
+          # These files have content hashes in their names, so stale cache is safe
+          aws s3 sync build/static/ s3://${{ env.S3_BUCKET }}/static/ \
+            --cache-control "public, max-age=31536000, immutable"
+
+
+
+
