@@ -31,6 +31,10 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  AWS_REGION: us-east-1
+  S3_BUCKET: s3-static-website-project-4           # Replace with your bucket name
+  #CLOUDFRONT_DISTRIBUTION_ID: ABCDEFGHIJKLMN      # Replace with your distribution ID
 
 jobs: 
   # ──────────────────────────────────────────
